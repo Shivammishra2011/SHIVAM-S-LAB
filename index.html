@@ -1,0 +1,1268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Shivam's Lab · Brand Discovery</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  :root{
+    --bg:#f7f5f1;--surface:#fff;--text:#0e0e0e;--text2:#4a4a4a;--muted:#8a8580;
+    --accent:#c6a15b;--accent-2:#e8c98a;--accent-soft:#f0e6d3;--border:#e9e4da;
+    --shadow-sm:0 6px 18px -10px rgba(70,50,20,.10),0 2px 6px rgba(70,50,20,.03);
+    --shadow-md:0 20px 50px -25px rgba(70,50,20,.20),0 10px 22px -12px rgba(70,50,20,.08);
+    --r-card:28px;--r-btn:60px;--r-sm:16px;
+    --font:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+    --serif:'Instrument Serif',Georgia,serif;
+    --t:.2s ease;--spring:cubic-bezier(.34,1.4,.64,1);
+  }
+  html{scroll-behavior:smooth}
+  body{background:var(--bg);color:var(--text);font-family:var(--font);line-height:1.5;-webkit-font-smoothing:antialiased;min-height:100vh;display:flex;flex-direction:column;overflow-x:hidden;position:relative}
+  .bg-layer{position:fixed;inset:0;z-index:0;pointer-events:none;background:radial-gradient(ellipse 70% 50% at 90% 0%, #f5e9d4 0%, transparent 55%),radial-gradient(ellipse 60% 50% at 0% 100%, #f0e4cf 0%, transparent 55%),var(--bg)}
+  .bg-dot{position:fixed;width:6px;height:6px;border-radius:50%;background:var(--accent);opacity:.18;z-index:0;pointer-events:none;animation:dotFloat 12s ease-in-out infinite;will-change:transform}
+  .bg-dot.d1{top:18%;left:8%}
+  .bg-dot.d2{top:72%;right:10%;animation-delay:-4s}
+  .bg-dot.d3{top:40%;right:20%;animation-delay:-8s;width:8px;height:8px}
+  @keyframes dotFloat{0%,100%{transform:translate(0,0)}50%{transform:translate(20px,-30px)}}
+  @media (prefers-reduced-motion:reduce){.bg-dot{animation:none}}
+
+  #app{position:relative;z-index:2;flex:1;display:flex;flex-direction:column;max-width:1180px;margin:0 auto;padding:1.5rem 1.5rem 2rem;width:100%}
+  .brand-header{display:flex;justify-content:space-between;align-items:center;padding:.5rem 0 1.25rem;border-bottom:1px solid var(--border);margin-bottom:2.5rem;flex-wrap:wrap;gap:1rem}
+  .brand-logo{font-weight:700;font-size:1.4rem;letter-spacing:-.03em;display:flex;align-items:baseline;gap:.5rem;flex-wrap:wrap}
+  .brand-logo .dot{width:8px;height:8px;border-radius:50%;background:var(--accent);display:inline-block;margin:0 .1rem;animation:pulseDot 2.5s ease-in-out infinite}
+  @keyframes pulseDot{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.3);opacity:.7}}
+  .brand-logo span{font-weight:300;color:var(--muted);font-size:.85rem}
+  .header-right{display:flex;align-items:center;gap:1rem;flex-wrap:wrap}
+  .tagline{font-size:.82rem;color:var(--muted)}
+  .sound-toggle{width:38px;height:38px;border-radius:50%;border:1px solid var(--border);background:var(--surface);cursor:pointer;display:grid;place-items:center;transition:border-color var(--t),color var(--t);color:var(--text2)}
+  .sound-toggle:hover{border-color:var(--accent);color:var(--accent)}
+  .sound-toggle.on{background:var(--text);color:#fff;border-color:var(--text)}
+
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:.55rem;border:1px solid transparent;background:var(--surface);color:var(--text);font-family:var(--font);font-weight:600;font-size:1rem;padding:.95rem 2rem;border-radius:var(--r-btn);cursor:pointer;transition:transform .15s ease, background var(--t), color var(--t), box-shadow var(--t), border-color var(--t);text-decoration:none;box-shadow:var(--shadow-sm);border-color:var(--border);line-height:1.2;white-space:nowrap;position:relative;overflow:hidden;-webkit-tap-highlight-color:transparent}
+  .btn:hover{transform:translateY(-1px);box-shadow:var(--shadow-md)}
+  .btn:active{transform:translateY(0) scale(.985)}
+  .btn-primary{background:var(--text);color:#fff;border-color:var(--text)}
+  .btn-primary:hover{background:#232323}
+  .btn-outline{background:transparent;border:1px solid var(--border);box-shadow:none}
+  .btn-outline:hover{border-color:var(--text);background:rgba(0,0,0,.02)}
+  .btn-accent{background:var(--accent);border-color:var(--accent);color:#111}
+  .btn-accent:hover{background:#b58e4a}
+  .btn:disabled{opacity:.4;pointer-events:none}
+  .btn .ripple{position:absolute;border-radius:50%;background:rgba(255,255,255,.4);transform:scale(0);animation:ripple .5s linear;pointer-events:none;will-change:transform,opacity}
+  .btn-outline .ripple{background:rgba(0,0,0,.12)}
+  @keyframes ripple{to{transform:scale(3);opacity:0}}
+
+  .opening-screen{display:flex;flex-direction:column;align-items:center;text-align:center;padding:1rem 1rem 4rem;animation:fadeInUp .7s var(--spring) both}
+  .eyebrow{display:inline-flex;align-items:center;gap:.5rem;background:var(--accent-soft);border:1px solid #e4d4b4;color:#7a5d24;font-weight:500;font-size:.8rem;padding:.4rem 1rem;border-radius:60px;margin-bottom:1.5rem}
+  .opening-headline{font-family:var(--serif);font-weight:400;font-size:clamp(3rem,8.5vw,5.5rem);letter-spacing:-.02em;line-height:1.02;max-width:900px;margin:0 0 1.5rem}
+  .opening-headline em{font-style:italic;color:var(--accent);position:relative;display:inline-block}
+  .cursor-blink{display:inline-block;width:3px;height:.85em;background:var(--accent);margin-left:.1em;vertical-align:baseline;animation:blink 1s step-end infinite}
+  @keyframes blink{50%{opacity:0}}
+  .opening-sub{font-size:1.15rem;color:var(--text2);max-width:600px;margin-bottom:3rem;font-weight:400;line-height:1.6}
+  .opening-sub strong{color:var(--text);font-weight:600}
+
+  .mode-cards{display:flex;gap:1.5rem;flex-wrap:wrap;justify-content:center;width:100%}
+  .mode-card{flex:1 1 280px;max-width:340px;background:var(--surface);border-radius:var(--r-card);padding:2.5rem 2rem;border:1px solid var(--border);box-shadow:var(--shadow-sm);cursor:pointer;text-align:left;display:flex;flex-direction:column;gap:.75rem;outline:none;transition:transform .2s var(--spring), box-shadow .2s, border-color .2s;will-change:transform}
+  .mode-card:hover{transform:translateY(-6px);box-shadow:var(--shadow-md);border-color:var(--accent-soft)}
+  .mode-card .icon-badge{width:52px;height:52px;border-radius:14px;background:var(--accent-soft);display:grid;place-items:center;font-size:1.5rem;margin-bottom:.5rem;transition:transform .25s var(--spring)}
+  .mode-card:hover .icon-badge{transform:rotate(-6deg) scale(1.05)}
+  .mode-card h2{font-size:1.7rem;font-weight:700;letter-spacing:-.025em}
+  .mode-card p{color:var(--text2);font-weight:400;font-size:.98rem;flex:1}
+  .mode-card .badge{margin-top:1.25rem;font-size:.85rem;display:inline-flex;align-items:center;gap:.4rem;color:var(--accent);font-weight:600;transition:gap .2s var(--spring)}
+  .mode-card:hover .badge{gap:.7rem}
+  .mode-card .badge .arrow{transition:transform .2s var(--spring)}
+  .mode-card:hover .badge .arrow{transform:translateX(3px)}
+  .mode-card .q-count{font-size:.75rem;color:var(--muted);font-weight:500;margin-top:.25rem}
+
+  .resume-banner{background:linear-gradient(135deg,#fff9ef,#fff4e0);border:1px solid #efdcb8;border-radius:var(--r-card);padding:1.5rem;margin-bottom:2rem;width:100%;max-width:680px;display:flex;flex-wrap:wrap;gap:1rem;justify-content:space-between;align-items:center;box-shadow:var(--shadow-sm)}
+  .resume-banner p{font-weight:600;font-size:1.05rem;display:flex;align-items:center;gap:.5rem}
+  .resume-banner .row{display:flex;gap:.75rem;flex-wrap:wrap}
+
+  .questionnaire-container{display:flex;flex-direction:column;flex:1;max-width:800px;margin:0 auto;width:100%;animation:slideIn .35s var(--spring) both}
+  @keyframes slideIn{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+  @keyframes fadeInUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+
+  .progress-area{margin-bottom:2rem}
+  .progress-meta{display:flex;justify-content:space-between;font-size:.82rem;color:var(--muted);margin-bottom:.6rem;font-weight:600;gap:1rem}
+  .progress-meta .pct{color:var(--accent);font-weight:700}
+  .progress-bar-bg{width:100%;height:8px;background:var(--border);border-radius:20px;overflow:hidden}
+  .progress-bar-fill{height:100%;width:0%;border-radius:20px;background:linear-gradient(90deg,var(--accent),var(--accent-2));transition:width .4s var(--spring);will-change:width}
+
+  .question-card{background:var(--surface);border-radius:var(--r-card);padding:2.25rem;box-shadow:var(--shadow-md);border:1px solid var(--border);margin-bottom:1.5rem;position:relative}
+  .question-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;border-radius:var(--r-card) var(--r-card) 0 0;background:linear-gradient(90deg,var(--accent),var(--accent-2))}
+  .section-label{font-size:.72rem;text-transform:uppercase;letter-spacing:.12em;color:var(--accent);font-weight:700;margin-bottom:.85rem;display:inline-flex;align-items:center;gap:.4rem}
+  .section-label::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--accent)}
+  .question-text{font-size:1.65rem;font-weight:700;letter-spacing:-.025em;line-height:1.25;margin-bottom:.55rem}
+  .question-desc{color:var(--text2);font-size:1rem;margin-bottom:1.5rem;font-weight:400}
+
+  .options-grid{display:flex;flex-wrap:wrap;gap:.75rem;margin:1.5rem 0 1rem}
+  .option-btn{background:var(--bg);border:1.5px solid var(--border);border-radius:var(--r-btn);padding:.7rem 1.5rem;font-family:var(--font);font-size:.95rem;font-weight:500;color:var(--text);cursor:pointer;transition:border-color .15s ease, background .15s ease, color .15s ease, transform .15s ease;display:inline-flex;align-items:center;gap:.4rem;text-align:left;position:relative;-webkit-tap-highlight-color:transparent;will-change:transform}
+  .option-btn:hover{border-color:var(--accent);background:#faf5ea;transform:translateY(-1px)}
+  .option-btn:active{transform:scale(.97)}
+  .option-btn.selected{background:var(--text);border-color:var(--text);color:#fff}
+  .option-btn.selected:hover{background:#1e1e1e}
+  .option-btn.selected::after{content:'✓';position:absolute;right:.65rem;top:50%;transform:translateY(-50%);font-weight:700}
+  .option-btn.selected{padding-right:2.3rem}
+
+  .text-input,.text-area{width:100%;padding:1rem 1.2rem;border-radius:var(--r-sm);border:1.5px solid var(--border);font-family:var(--font);font-size:1rem;background:var(--bg);transition:border-color var(--t),box-shadow var(--t);resize:vertical}
+  .text-input:focus,.text-area:focus{outline:none;border-color:var(--accent);background:#fff;box-shadow:0 0 0 4px rgba(198,161,91,.12)}
+  .text-area{min-height:120px}
+
+  .custom-input-wrapper{overflow:hidden;max-height:0;opacity:0;transition:max-height .3s ease,opacity .25s ease,margin .25s ease;margin-top:0;will-change:max-height,opacity}
+  .custom-input-wrapper.open{max-height:320px;opacity:1;margin-top:1.25rem}
+  .custom-input-wrapper label{display:block;font-size:.85rem;font-weight:600;color:var(--text2);margin-bottom:.5rem}
+
+  .followup-block{margin-top:1.25rem;padding:1.25rem;border-radius:var(--r-sm);background:var(--bg);border:1px dashed var(--border);animation:followIn .3s ease both}
+  @keyframes followIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+  .followup-block .question-text{font-size:1.15rem;margin-bottom:.5rem}
+
+  .slider-group{display:flex;flex-direction:column;gap:1.6rem;margin:1.5rem 0}
+  .slider-item{display:flex;flex-direction:column;gap:.55rem}
+  .slider-labels{display:flex;justify-content:space-between;font-size:.85rem;font-weight:600;color:var(--text2)}
+  .slider-input{width:100%;-webkit-appearance:none;appearance:none;height:8px;background:linear-gradient(90deg,var(--accent-soft),var(--accent-2));border-radius:10px;outline:none;cursor:pointer}
+  .slider-input::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:24px;height:24px;background:var(--text);border-radius:50%;cursor:pointer;border:3px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,.15);transition:transform .15s var(--spring)}
+  .slider-input::-webkit-slider-thumb:hover{transform:scale(1.12)}
+  .slider-input::-moz-range-thumb{width:24px;height:24px;background:var(--text);border-radius:50%;cursor:pointer;border:3px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,.15)}
+
+  .tags-container{display:flex;flex-wrap:wrap;gap:.5rem;margin-bottom:.8rem;min-height:10px}
+  .tag{background:var(--text);color:#fff;padding:.35rem 1rem .35rem 1.2rem;border-radius:30px;font-size:.9rem;display:inline-flex;align-items:center;gap:.4rem;animation:tagIn .25s var(--spring)}
+  @keyframes tagIn{from{opacity:0;transform:scale(.7)}to{opacity:1;transform:scale(1)}}
+  .tag button{background:none;border:none;color:#fff;cursor:pointer;font-size:1.15rem;line-height:1;padding:0 .15rem;opacity:.7;transition:opacity .15s}
+  .tag button:hover{opacity:1}
+
+  .nav-buttons{display:flex;justify-content:space-between;align-items:center;gap:1rem;margin-top:1.5rem;flex-wrap:wrap}
+  .nav-buttons .btn{min-width:130px}
+  .error-msg{color:#b34b3f;font-size:.9rem;margin-top:.85rem;font-weight:600;display:none}
+  .error-msg.visible{display:block;animation:shake .35s ease}
+  @keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+
+  .streak{position:fixed;top:1.5rem;right:1.5rem;z-index:50;background:linear-gradient(135deg,#ff8a3d,#ff5252);color:#fff;padding:.6rem 1.1rem;border-radius:60px;font-weight:700;font-size:.85rem;box-shadow:0 10px 30px -8px rgba(255,90,60,.5);display:flex;align-items:center;gap:.4rem;opacity:0;transform:translateY(-20px) scale(.85);transition:opacity .3s ease, transform .3s var(--spring);pointer-events:none;will-change:transform,opacity}
+  .streak.show{opacity:1;transform:translateY(0) scale(1)}
+
+  .review-section{background:var(--surface);border-radius:var(--r-card);padding:2rem;border:1px solid var(--border);margin-bottom:1.5rem;box-shadow:var(--shadow-sm);animation:fadeInUp .4s var(--spring) both}
+  .review-section h3{font-size:1.2rem;font-weight:700;margin-bottom:1rem;border-bottom:1px solid var(--border);padding-bottom:.75rem}
+  .review-item{margin-bottom:.9rem}
+  .review-label{font-size:.72rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:700}
+  .review-value{font-weight:400;color:var(--text);margin-top:.2rem;white-space:pre-wrap;word-break:break-word;font-size:.98rem}
+
+  .completion-screen{text-align:center;padding:2rem 1rem;position:relative}
+  .completion-screen h1{font-family:var(--serif);font-weight:400;font-size:clamp(2.5rem,7vw,4.5rem);letter-spacing:-.02em;margin-bottom:1rem}
+  .completion-screen .sub{font-size:1.15rem;color:var(--text2);margin-bottom:2.5rem}
+  .completion-actions{display:flex;gap:1rem;flex-wrap:wrap;justify-content:center}
+  .completion-emoji{font-size:4rem;display:block;margin-bottom:1rem;animation:bounceIn .6s var(--spring)}
+  @keyframes bounceIn{0%{transform:scale(0);opacity:0}60%{transform:scale(1.15);opacity:1}100%{transform:scale(1)}}
+
+  .confetti{position:fixed;width:8px;height:12px;z-index:99;pointer-events:none;will-change:transform,opacity}
+
+  @media (max-width:640px){
+    #app{padding:1rem 1rem 1.5rem}
+    .question-card{padding:1.5rem 1.25rem;border-radius:22px}
+    .question-text{font-size:1.3rem}
+    .btn{padding:.85rem 1.6rem;font-size:.95rem}
+    .mode-card{padding:1.75rem;border-radius:22px}
+    .mode-card h2{font-size:1.4rem}
+    .opening-headline{font-size:2.4rem}
+    .nav-buttons{flex-direction:column-reverse}
+    .nav-buttons .btn{width:100%}
+    .resume-banner{flex-direction:column;align-items:flex-start}
+    .streak{top:auto;bottom:1.5rem;right:50%;transform:translate(50%,20px)}
+    .streak.show{transform:translate(50%,0)}
+  }
+  @media (prefers-reduced-motion:reduce){
+    *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
+    .bg-dot,.brand-logo .dot,.cursor-blink{animation:none!important}
+  }
+  button:focus-visible,input:focus-visible,textarea:focus-visible,[tabindex]:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+</style>
+</head>
+<body>
+
+<div class="bg-layer" aria-hidden="true"></div>
+<div class="bg-dot d1" aria-hidden="true"></div>
+<div class="bg-dot d2" aria-hidden="true"></div>
+<div class="bg-dot d3" aria-hidden="true"></div>
+
+<div class="streak" id="streak"><span>🔥</span> <span id="streakText">On a roll!</span></div>
+
+<div id="app">
+  <header class="brand-header">
+    <div class="brand-logo">Shivam's Lab<span class="dot"></span><span>Where Brands Take Shape.</span></div>
+    <div class="header-right">
+      <div class="tagline" id="modeTagline"></div>
+      <button class="sound-toggle" id="soundToggle" aria-label="Toggle sound" title="Toggle sound">🔇</button>
+    </div>
+  </header>
+  <main id="mainContent"></main>
+</div>
+
+<script>
+/* ============================================================
+   CONFIG
+   ============================================================ */
+const WHATSAPP_NUMBER = '911234567890';
+const BRAND_NAME = "Shivam's Lab";
+const TAGLINE = "Where Brands Take Shape.";
+const STORAGE_KEY = 'shivamLabDiscovery_v5';
+
+/* ============================================================
+   STATE
+   ============================================================ */
+function makeFreshState() {
+  return { mode:null, phase:'opening', currentSectionIndex:0, currentQuestionIndex:0, answers:{}, sliderValues:{}, designerNotes:'', streak:0 };
+}
+let state = makeFreshState();
+
+/* ============================================================
+   SOUND
+   ============================================================ */
+let soundEnabled = false;
+let audioCtx = null;
+function playTone(freq, dur, vol) {
+  if (!soundEnabled) return;
+  if (!audioCtx) { try { audioCtx = new (window.AudioContext || window.webkitAudioContext)(); } catch(e){ return; } }
+  if (audioCtx.state === 'suspended') audioCtx.resume();
+  const o = audioCtx.createOscillator(), g = audioCtx.createGain();
+  o.frequency.value = freq; o.type = 'sine';
+  g.gain.setValueAtTime(vol || 0.05, audioCtx.currentTime);
+  g.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + (dur || 0.12));
+  o.connect(g); g.connect(audioCtx.destination);
+  o.start(); o.stop(audioCtx.currentTime + (dur || 0.12) + 0.02);
+}
+const sfx = {
+  click: () => playTone(660, 0.06, 0.03),
+  select: () => { playTone(880, 0.05, 0.04); setTimeout(()=>playTone(1180, 0.06, 0.03), 50); },
+  success: () => { playTone(660, 0.06, 0.04); setTimeout(()=>playTone(880, 0.06, 0.04), 70); setTimeout(()=>playTone(1320, 0.1, 0.04), 140); },
+  error: () => playTone(220, 0.18, 0.05)
+};
+
+/* ============================================================
+   HELPERS
+   ============================================================ */
+const mainContent = document.getElementById('mainContent');
+const modeTaglineEl = document.getElementById('modeTagline');
+const streakEl = document.getElementById('streak');
+const streakTextEl = document.getElementById('streakText');
+function clearMain() { mainContent.innerHTML = ''; }
+function esc(s) { return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
+let saveTimer = null;
+function saveToLocal() {
+  if (saveTimer) clearTimeout(saveTimer);
+  saveTimer = setTimeout(() => { try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch(e){} saveTimer = null; }, 250);
+}
+function saveNow() {
+  if (saveTimer) { clearTimeout(saveTimer); saveTimer = null; }
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch(e){}
+}
+function loadFromLocal() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return false;
+    const parsed = JSON.parse(raw);
+    if (!parsed || typeof parsed !== 'object') return false;
+    state = Object.assign(makeFreshState(), parsed);
+    return true;
+  } catch(e) { return false; }
+}
+function hasSavedProgress() {
+  return !!(state.mode && ((state.answers && Object.keys(state.answers).length > 0) || state.phase !== 'opening'));
+}
+function triggerMatches(trig, val) {
+  if (Array.isArray(trig)) {
+    if (Array.isArray(val)) return trig.some(t => val.includes(t));
+    return trig.includes(val);
+  }
+  if (Array.isArray(val)) return val.includes(trig);
+  return val === trig;
+}
+function isAnswered(q) {
+  const v = state.answers[q.id];
+  if (v === undefined || v === null) return false;
+  if (Array.isArray(v)) return v.length > 0;
+  return String(v).trim() !== '';
+}
+
+/* ============================================================
+   CONFETTI
+   ============================================================ */
+function fireConfetti(x, y, count) {
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  const colors = ['#c6a15b','#e8c98a','#0e0e0e','#ff8a3d'];
+  const n = Math.min(count || 8, 8);
+  const frag = document.createDocumentFragment();
+  for (let i = 0; i < n; i++) {
+    const c = document.createElement('div');
+    c.className = 'confetti';
+    c.style.left = (x - 4) + 'px';
+    c.style.top = (y - 6) + 'px';
+    c.style.background = colors[i % colors.length];
+    c.style.borderRadius = i % 2 ? '50%' : '2px';
+    const angle = Math.random() * Math.PI * 2;
+    const dist = 30 + Math.random() * 70;
+    frag.appendChild(c);
+    requestAnimationFrame(() => {
+      c.style.transition = 'transform 1s ease-out, opacity 1s ease-out';
+      c.style.transform = `translate(${Math.cos(angle)*dist}px, ${Math.sin(angle)*dist + 80}px) rotate(${Math.random()*720-360}deg)`;
+      c.style.opacity = '0';
+    });
+    setTimeout(() => c.remove(), 1100);
+  }
+  document.body.appendChild(frag);
+}
+function fireFireworks() {
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  const cx = window.innerWidth / 2, cy = window.innerHeight / 2;
+  [0, 200, 450].forEach(d => setTimeout(() => fireConfetti(cx + (Math.random()-0.5)*200, cy + (Math.random()-0.5)*150, 8), d));
+}
+
+/* ============================================================
+   STREAK
+   ============================================================ */
+let lastAnswerTime = 0, streakTimer = null;
+function bumpStreak() {
+  const now = Date.now();
+  state.streak = (now - lastAnswerTime < 12000) ? (state.streak || 0) + 1 : 1;
+  lastAnswerTime = now;
+  if (state.streak >= 3) {
+    streakEl.classList.add('show');
+    streakTextEl.textContent = state.streak >= 8 ? 'Legendary! 🔥' : state.streak >= 5 ? "You're on fire! 🔥" : "Nice streak! 🔥";
+    if (streakTimer) clearTimeout(streakTimer);
+    streakTimer = setTimeout(() => streakEl.classList.remove('show'), 3000);
+  }
+}
+
+/* ============================================================
+   RIPPLE
+   ============================================================ */
+document.addEventListener('click', (e) => {
+  const btn = e.target.closest('.btn');
+  if (!btn) return;
+  const r = btn.getBoundingClientRect();
+  const size = Math.max(r.width, r.height);
+  const rip = document.createElement('span');
+  rip.className = 'ripple';
+  rip.style.width = rip.style.height = size + 'px';
+  rip.style.left = (e.clientX - r.left - size/2) + 'px';
+  rip.style.top = (e.clientY - r.top - size/2) + 'px';
+  btn.appendChild(rip);
+  setTimeout(() => rip.remove(), 550);
+});
+
+/* ============================================================
+   CLIENT INFO QUESTIONS
+   ============================================================ */
+function getClientInfoQuestions() {
+  return [
+    { id: 'clientName', text: 'Your name', type: 'text', required: true, placeholder: 'Full name' },
+    { id: 'clientBrandName', text: 'Brand name', type: 'text', required: true, placeholder: 'Brand or project name' },
+    { id: 'clientEmail', text: 'Email (optional)', type: 'text', placeholder: 'you@example.com' },
+    { id: 'clientPhone', text: 'Phone (optional)', type: 'text', placeholder: '+91...' },
+    { id: 'clientDate', text: 'Date', type: 'date', required: false },
+    { id: 'projectType', text: 'Project type', type: 'single',
+      options: ['New Logo','Logo Redesign','Brand Identity','Visual Identity'],
+      custom: 'Other', customPrompt: 'Please specify the project type', required: true }
+  ];
+}
+
+/* ============================================================
+   SCHEMA
+   clientMode: true  → visible to client
+   clientMode: false → designer-only (hidden in client mode)
+   (If omitted, treated as designer-only for safety.)
+   ============================================================ */
+const sections = [
+  { id:'basics', label:'BRAND BASICS', questions:[
+    { id:'brandName', text:'What is the name of the brand?', type:'text', required:true, placeholder:'e.g. ABC Academy', clientMode:true },
+    { id:'tagline', text:'Does the brand have a tagline or slogan?', type:'single', options:['Yes','No','Still deciding'], required:false, clientMode:false,
+      followups:[{ id:'taglineText', triggerValue:'Yes', text:'What is the tagline?', type:'text', placeholder:'Enter tagline' }] },
+    { id:'brandDoes', text:'What does the brand do?', desc:'Explain it in simple words.', type:'textarea', required:true, placeholder:'We provide...', clientMode:true },
+    { id:'services', text:'What products or services does the brand offer?', type:'multiple', options:['Consulting','Education','Technology','E-commerce','Food & Beverage','Fashion','Healthcare','Finance','Real Estate','Creative Services','Manufacturing','Retail','Hospitality','Professional Services'], custom:'Other', required:false, clientMode:true },
+    { id:'brandType', text:'Is this brand:', type:'multiple', options:['New business','Existing business','Personal brand','Startup','Product','Service','Organization','Community','Rebrand'], custom:'Other', required:false, clientMode:false,
+      followups:[
+        { id:'existingWhat', triggerValue:'Existing business', text:'What currently exists?', type:'textarea' },
+        { id:'newLaunch', triggerValue:'New business', text:'What are you planning to launch?', type:'textarea' },
+        { id:'personalBrand', triggerValue:'Personal brand', text:'Tell us about the person behind the brand.', type:'textarea' }
+      ] },
+    { id:'brandWhy', text:'Why does the brand exist?', type:'textarea', required:false, clientMode:true },
+    { id:'brandProblem', text:'What problem does the brand solve?', type:'textarea', required:false, clientMode:false }
+  ]},
+  { id:'vision', label:'VISION & PURPOSE', questions:[
+    { id:'mainGoal', text:'What is the main goal of the brand?', type:'multiple', options:['Build awareness','Increase sales','Build trust','Look more professional','Enter a new market','Attract a specific audience','Differentiate from competitors','Launch a new business','Reposition the brand','Build a premium image'], custom:'Other', required:false, clientMode:true },
+    { id:'future', text:'Where do you want this brand to be in 3–5 years?', type:'textarea', required:false, clientMode:true },
+    { id:'success', text:'What does success look like for this brand?', type:'textarea', required:false, clientMode:false },
+    { id:'values', text:'What values should the brand stand for?', type:'multiple', options:['Trust','Innovation','Simplicity','Quality','Creativity','Reliability','Transparency','Confidence','Accessibility','Sustainability','Tradition','Luxury','Community','Growth'], custom:'Other', required:false, clientMode:true },
+    { id:'existsBecause', text:'Complete this sentence: "Our brand exists because…"', type:'textarea', required:false, clientMode:false }
+  ]},
+  { id:'audience', label:'AUDIENCE', questions:[
+    { id:'primaryAudience', text:'Who is your primary audience?', type:'multiple', options:['Students','Parents','Professionals','Entrepreneurs','Businesses','Creators','Families','Young adults','Children','Corporate clients','Local customers','Global customers'], custom:'Other', required:false, clientMode:true },
+    { id:'ageGroup', text:'What age group are you mainly targeting?', type:'single', options:['Under 13','13–17','18–24','25–34','35–44','45–54','55+','Mixed'], required:false, clientMode:true },
+    { id:'location', text:'Where is your audience located?', type:'single', options:['Local','City','Regional','National','International','Online/global','Other'], required:false, clientMode:false,
+      followups:[{ id:'locationDetail', triggerValue:['Local','City','Regional','National','International','Online/global','Other'], text:'Please specify the location', type:'text', placeholder:'e.g. Mumbai, India' }] },
+    { id:'mattersMost', text:'What matters most to your audience?', type:'multiple', options:['Price','Quality','Trust','Convenience','Speed','Expertise','Experience','Status','Innovation','Personal connection','Results'], custom:'Other', required:false, clientMode:false },
+    { id:'whyChoose', text:'Why should someone choose your brand?', type:'textarea', required:false, clientMode:true },
+    { id:'hesitation', text:'What might make a potential customer hesitate before choosing you?', type:'textarea', required:false, clientMode:false }
+  ]},
+  { id:'positioning', label:'POSITIONING', questions:[
+    { id:'describeWords', text:'How would you describe the brand in 3–5 words?', type:'tags', required:false, placeholder:'Type a word and press Enter', clientMode:false },
+    { id:'afterInteraction', text:'How should people describe your brand after interacting with it?', type:'textarea', required:false, clientMode:false },
+    { id:'positioningFit', text:'Which positioning fits your brand?', type:'multiple', options:['Affordable','Accessible','Premium','Luxury','Professional','Friendly','Bold','Innovative','Traditional','Modern','Expert','Playful','Minimal','Exclusive','Mass-market'], custom:'Other', required:false, clientMode:false },
+    { id:'different', text:'What makes your brand different?', type:'textarea', required:false, clientMode:false },
+    { id:'competitiveAdvantage', text:'What is your strongest competitive advantage?', type:'textarea', required:false, clientMode:false },
+    { id:'neverFeel', text:'What should your brand NEVER feel like?', type:'textarea', required:false, clientMode:false }
+  ]},
+  { id:'competitors', label:'COMPETITORS', questions:[
+    { id:'competitorsList', text:'Who are your main competitors?', type:'textarea', required:false, clientMode:false },
+    { id:'likeCompetitors', text:'What do you like about your competitors’ branding?', type:'textarea', required:false, clientMode:false },
+    { id:'dislikeCompetitors', text:'What do you dislike about their branding?', type:'textarea', required:false, clientMode:false },
+    { id:'differentFrom', text:'Is there a competitor you want to look different from?', type:'textarea', required:false, clientMode:false },
+    { id:'communicateUnique', text:'What should your brand communicate that competitors do not?', type:'textarea', required:false, clientMode:false },
+    { id:'admireBrands', text:'Are there any brands whose identity you admire?', type:'textarea', required:false, clientMode:false },
+    { id:'referenceLinks', text:'Optional: competitor or reference links', type:'text', required:false, clientMode:false }
+  ]},
+  { id:'personality', label:'PERSONALITY', questions:[
+    { id:'brandPerson', text:'If your brand were a person, what would it be like?', type:'multiple', options:['Confident','Friendly','Intelligent','Calm','Energetic','Serious','Creative','Sophisticated','Bold','Warm','Trustworthy','Playful','Professional','Adventurous','Minimal','Traditional','Futuristic'], custom:'Other', required:false, clientMode:true },
+    { id:'personalitySliders', text:'Choose the personality spectrum.', type:'slider', clientMode:true, sliders:[
+      { id:'sliderProPlay', left:'Professional', right:'Playful' },
+      { id:'sliderMinExp', left:'Minimal', right:'Expressive' },
+      { id:'sliderTradMod', left:'Traditional', right:'Modern' },
+      { id:'sliderCalmEnergy', left:'Calm', right:'Energetic' },
+      { id:'sliderFriendlyAuth', left:'Friendly', right:'Authoritative' },
+      { id:'sliderAffordPrem', left:'Affordable', right:'Premium' }
+    ]},
+    { id:'emotions', text:'What emotions should people associate with the brand?', type:'multiple', options:['Trust','Excitement','Comfort','Confidence','Curiosity','Inspiration','Security','Energy','Happiness','Sophistication'], custom:'Other', required:false, clientMode:true }
+  ]},
+  { id:'visual', label:'VISUAL DIRECTION', questions:[
+    { id:'visualStyle', text:'What visual style feels closest to your brand?', type:'multiple', options:['Minimal','Modern','Bold','Elegant','Luxury','Corporate','Playful','Organic','Geometric','Handcrafted','Futuristic','Retro','Editorial','Tech','Traditional'], custom:'Other', required:false, clientMode:true },
+    { id:'colorsAppropriate', text:'Which colors feel appropriate?', type:'multiple', options:['Black & White','Blue','Green','Red','Orange','Yellow','Purple','Pink','Brown','Neutral','Earth tones','No preference'], custom:'Other', required:false, clientMode:true },
+    { id:'colorsAvoid', text:'Colors I definitely DON’T want', type:'multiple', options:['Black & White','Blue','Green','Red','Orange','Yellow','Purple','Pink','Brown','Neutral','Earth tones'], custom:'Other', required:false, clientMode:false },
+    { id:'logoStyle', text:'Which logo style interests you?', type:'single', options:['Wordmark','Lettermark','Monogram','Symbol','Icon','Combination mark','Mascot','Emblem','Abstract mark','I don’t know'], custom:'Other', required:false, clientMode:true },
+    { id:'logoFeel', text:'Should the logo feel:', type:'multiple', options:['Simple','Detailed','Recognizable','Abstract','Literal','Symbolic','Strong','Soft','Geometric','Organic'], custom:'Other', required:false, clientMode:false },
+    { id:'symbolsInclude', text:'Any symbols, objects, or concepts to incorporate?', type:'textarea', required:false, clientMode:true },
+    { id:'symbolsAvoid', text:'Any symbols, clichés, or visual elements you absolutely DON’T want?', type:'textarea', required:false, clientMode:false },
+    { id:'existingAssets', text:'Do you already have existing brand assets?', type:'multiple', options:['Existing logo','Colors','Typography','Brand guidelines','Website','Social media','Packaging','None'], custom:'Other', required:false, clientMode:false,
+      followups:[
+        { id:'assetsNotes', triggerValue:'Existing logo', text:'What would you like to change about the existing logo?', type:'textarea' },
+        { id:'packagingType', triggerValue:'Packaging', text:'What type of packaging?', type:'text' }
+      ]}
+  ]},
+  { id:'application', label:'APPLICATION & USAGE', questions:[
+    { id:'logoUsage', text:'Where will the logo primarily be used?', type:'multiple', options:['Website','Instagram','Social media','Business cards','Packaging','Signage','App','Product','Clothing','Documents','Advertising','Print','Video','Merchandise'], custom:'Other', required:false, clientMode:false,
+      followups:[{ id:'packagingType2', triggerValue:'Packaging', text:'What type of packaging?', type:'text' }] },
+    { id:'logoWorkWell', text:'Where will the logo need to work especially well?', type:'textarea', required:false, clientMode:false },
+    { id:'logoVariations', text:'Do you need different logo variations?', type:'single', options:['Yes','No','Not sure'], required:false, clientMode:false,
+      followups:[{ id:'variationsList', triggerValue:'Yes', text:'Which variations?', type:'multiple', options:['Primary logo','Horizontal','Stacked','Icon','Monochrome','Social profile','Favicon'], custom:'Other' }] }
+  ]},
+  { id:'story', label:'STORY & MEANING', questions:[
+    { id:'nameStory', text:'Is there a story behind the brand name?', type:'textarea', required:false, clientMode:false },
+    { id:'nameMeaning', text:'Does the brand name have a special meaning?', type:'textarea', required:false, clientMode:false },
+    { id:'connectedTo', text:'Is there a person, place, event, idea, culture, or experience connected to the brand?', type:'textarea', required:false, clientMode:false },
+    { id:'hiddenMessage', text:'Is there a message you want hidden or subtly represented in the logo?', type:'textarea', required:false, clientMode:false },
+    { id:'oneThingRemember', text:'If someone sees your logo for the first time, what is the ONE thing you want them to remember?', type:'textarea', required:false, clientMode:false }
+  ]},
+  { id:'final', label:'FINAL DIRECTION', questions:[
+    { id:'mostImportant', text:'What is the single most important thing the new identity must achieve?', type:'textarea', required:false, clientMode:true },
+    { id:'exactlyBrand', text:'What would make you say: "Yes. That’s exactly our brand."', type:'textarea', required:false, clientMode:true },
+    { id:'anythingElse', text:'Is there anything about your brand that we haven’t asked?', type:'textarea', required:false, clientMode:true },
+    { id:'finalNotes', text:'Add any final notes, references, links, or ideas.', type:'textarea', required:false, clientMode:false }
+  ]}
+];
+
+/* ============================================================
+   MODE FILTERING — this is the key change
+   ============================================================ */
+function getActiveSections(mode) {
+  if (mode === 'designer') return sections;
+  // client mode: only keep sections that still have visible questions
+  return sections
+    .map(sec => ({
+      ...sec,
+      questions: sec.questions.filter(q => q.clientMode === true)
+    }))
+    .filter(sec => sec.questions.length > 0);
+}
+
+// Short label used in the mode cards
+function getClientQuestionCount() {
+  return getActiveSections('client').reduce((sum, s) => sum + s.questions.length, 0);
+}
+function getDesignerQuestionCount() {
+  return sections.reduce((sum, s) => sum + s.questions.length, 0);
+}
+
+/* ============================================================
+   PROGRESS
+   ============================================================ */
+function computeOverallProgress() {
+  const active = getActiveSections(state.mode);
+  const infoQs = getClientInfoQuestions().length;
+  let total = infoQs;
+  active.forEach(sec => {
+    total += sec.questions.length;
+    sec.questions.forEach(q => {
+      if (q.followups) q.followups.forEach(f => {
+        if (triggerMatches(f.triggerValue, state.answers[q.id])) total += 1;
+      });
+    });
+  });
+  if (state.phase === 'opening') return { done:0, total };
+  if (state.phase === 'designerNotes' || state.phase === 'review' || state.phase === 'complete') return { done:total, total };
+
+  let done = 0;
+  if (state.phase === 'clientInfo') done = state.currentQuestionIndex;
+  else if (state.phase === 'sections') {
+    done = infoQs;
+    for (let i = 0; i < state.currentSectionIndex && i < active.length; i++) {
+      const sec = active[i];
+      done += sec.questions.length;
+      sec.questions.forEach(q => {
+        if (q.followups) q.followups.forEach(f => {
+          if (triggerMatches(f.triggerValue, state.answers[q.id])) done += 1;
+        });
+      });
+    }
+    const curSec = active[state.currentSectionIndex];
+    if (curSec) {
+      for (let j = 0; j < state.currentQuestionIndex && j < curSec.questions.length; j++) {
+        done += 1;
+        const q = curSec.questions[j];
+        if (q.followups) q.followups.forEach(f => {
+          if (triggerMatches(f.triggerValue, state.answers[q.id])) done += 1;
+        });
+      }
+    }
+  }
+  return { done, total };
+}
+
+/* ============================================================
+   OPENING SCREEN
+   ============================================================ */
+function renderOpeningScreen() {
+  modeTaglineEl.textContent = '';
+  clearMain();
+  const wrap = document.createElement('div');
+  wrap.className = 'opening-screen';
+  const resume = hasSavedProgress();
+  const clientCount = getClientQuestionCount();
+  const designerCount = getDesignerQuestionCount();
+
+  wrap.innerHTML = `
+    <div class="eyebrow">✦ Brand Discovery · Shivam's Lab</div>
+    <h1 class="opening-headline">Let’s Shape<br><em>Your Brand.</em><span class="cursor-blink" aria-hidden="true"></span></h1>
+    <p class="opening-sub">A short guided questionnaire to uncover your brand’s <strong>purpose</strong>, <strong>personality</strong>, <strong>audience</strong>, and <strong>visual direction</strong> — so we can create an identity that truly fits.</p>
+    ${resume ? `
+      <div class="resume-banner">
+        <p>👋 Welcome back. Your questionnaire is waiting.</p>
+        <div class="row">
+          <button class="btn btn-primary" id="resumeBtn">Continue →</button>
+          <button class="btn btn-outline" id="restartBtn">Start again</button>
+        </div>
+      </div>
+    ` : ''}
+    <div class="mode-cards">
+      <div class="mode-card" tabindex="0" role="button" data-mode="designer">
+        <div class="icon-badge">🎨</div>
+        <h2>I’m the Designer</h2>
+        <p>Conducting a full brand discovery session with my client.</p>
+        <div class="q-count">${designerCount} questions · full discovery</div>
+        <div class="badge">Continue as designer <span class="arrow">→</span></div>
+      </div>
+      <div class="mode-card" tabindex="0" role="button" data-mode="client">
+        <div class="icon-badge">💡</div>
+        <h2>I’m the Client</h2>
+        <p>Sharing my brand, vision, goals, and ideas.</p>
+        <div class="q-count">${clientCount} questions · ~5 minutes</div>
+        <div class="badge">Start as client <span class="arrow">→</span></div>
+      </div>
+    </div>
+  `;
+  mainContent.appendChild(wrap);
+
+  document.querySelectorAll('.mode-card').forEach(card => {
+    const go = () => { sfx.success(); startMode(card.dataset.mode); };
+    card.addEventListener('click', go);
+    card.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); go(); } });
+  });
+
+  const resumeBtn = document.getElementById('resumeBtn');
+  if (resumeBtn) resumeBtn.addEventListener('click', () => { sfx.click(); resumeFromSave(); });
+  const restartBtn = document.getElementById('restartBtn');
+  if (restartBtn) restartBtn.addEventListener('click', () => {
+    sfx.click();
+    if (confirm('Clear saved progress and start fresh?')) {
+      localStorage.removeItem(STORAGE_KEY);
+      state = makeFreshState();
+      renderOpeningScreen();
+    }
+  });
+}
+
+function resumeFromSave() {
+  if (state.phase === 'complete') { showCompletionScreen(); return; }
+  if (state.phase === 'review') { renderReviewStep(); return; }
+  if (state.phase === 'designerNotes') { renderDesignerNotesStep(); return; }
+  renderCurrentStep();
+}
+
+function startMode(mode) {
+  state = makeFreshState();
+  state.mode = mode;
+  state.phase = 'clientInfo';
+  saveNow();
+  renderCurrentStep();
+}
+
+/* ============================================================
+   MAIN RENDERER (mode-aware)
+   ============================================================ */
+function renderCurrentStep() {
+  clearMain();
+  modeTaglineEl.textContent = state.mode === 'designer' ? '🎨 Designer mode · discovery' : (state.mode === 'client' ? '💡 Client mode' : '');
+  if (state.phase === 'opening' || !state.mode) { renderOpeningScreen(); return; }
+
+  const active = getActiveSections(state.mode);
+
+  if (state.phase === 'clientInfo') {
+    const qs = getClientInfoQuestions();
+    if (state.currentQuestionIndex >= qs.length) {
+      state.phase = 'sections'; state.currentSectionIndex = 0; state.currentQuestionIndex = 0;
+      saveNow(); renderCurrentStep(); return;
+    }
+    const q = qs[state.currentQuestionIndex];
+    renderQuestionCard({
+      q, sectionLabel:'CLIENT INFORMATION', idx: state.currentQuestionIndex, total: qs.length,
+      onNext: () => {
+        if (state.currentQuestionIndex < qs.length - 1) state.currentQuestionIndex++;
+        else { state.phase = 'sections'; state.currentSectionIndex = 0; state.currentQuestionIndex = 0; }
+        saveNow(); renderCurrentStep();
+      },
+      onBack: () => {
+        if (state.currentQuestionIndex > 0) state.currentQuestionIndex--;
+        else state = makeFreshState();
+        saveNow(); renderCurrentStep();
+      }
+    });
+    return;
+  }
+
+  if (state.phase === 'sections') {
+    const sec = active[state.currentSectionIndex];
+    if (!sec) { state.phase = state.mode === 'designer' ? 'designerNotes' : 'review'; saveNow(); renderCurrentStep(); return; }
+    if (state.currentQuestionIndex >= sec.questions.length) {
+      if (state.currentSectionIndex < active.length - 1) { state.currentSectionIndex++; state.currentQuestionIndex = 0; }
+      else state.phase = state.mode === 'designer' ? 'designerNotes' : 'review';
+      saveNow(); renderCurrentStep(); return;
+    }
+    const q = sec.questions[state.currentQuestionIndex];
+    renderQuestionCard({
+      q, sectionLabel: sec.label, idx: state.currentQuestionIndex, total: sec.questions.length,
+      onNext: () => {
+        if (state.currentQuestionIndex < sec.questions.length - 1) state.currentQuestionIndex++;
+        else if (state.currentSectionIndex < active.length - 1) { state.currentSectionIndex++; state.currentQuestionIndex = 0; }
+        else state.phase = state.mode === 'designer' ? 'designerNotes' : 'review';
+        saveNow(); renderCurrentStep();
+      },
+      onBack: () => {
+        if (state.currentQuestionIndex > 0) state.currentQuestionIndex--;
+        else if (state.currentSectionIndex > 0) {
+          state.currentSectionIndex--;
+          state.currentQuestionIndex = active[state.currentSectionIndex].questions.length - 1;
+        } else { state.phase = 'clientInfo'; state.currentQuestionIndex = getClientInfoQuestions().length - 1; }
+        saveNow(); renderCurrentStep();
+      }
+    });
+    return;
+  }
+
+  if (state.phase === 'designerNotes') { renderDesignerNotesStep(); return; }
+  if (state.phase === 'review') { renderReviewStep(); return; }
+  if (state.phase === 'complete') { showCompletionScreen(); return; }
+  renderOpeningScreen();
+}
+
+/* ============================================================
+   QUESTION CARD
+   ============================================================ */
+function renderQuestionCard({ q, sectionLabel, idx, total, onNext, onBack }) {
+  const container = document.createElement('div');
+  container.className = 'questionnaire-container';
+  const prog = computeOverallProgress();
+  const percent = Math.min(100, Math.round((prog.done / Math.max(prog.total, 1)) * 100));
+
+  container.innerHTML = `
+    <div class="progress-area">
+      <div class="progress-meta"><span>${esc(sectionLabel)} · Q${idx + 1}/${total}</span><span class="pct">${percent}%</span></div>
+      <div class="progress-bar-bg"><div class="progress-bar-fill" style="width:${percent}%"></div></div>
+    </div>
+    <div class="question-card">
+      <div class="section-label">${esc(sectionLabel)}</div>
+      <div class="question-text">${esc(q.text)}</div>
+      ${q.desc ? `<div class="question-desc">${esc(q.desc)}</div>` : ''}
+      <div id="questionBody"></div>
+      <div class="error-msg" id="errorMsg">Please fill this in.</div>
+    </div>
+    <div class="nav-buttons">
+      <button class="btn btn-outline" id="backBtn">← Back</button>
+      <button class="btn btn-primary" id="nextBtn">Continue →</button>
+    </div>
+  `;
+  mainContent.appendChild(container);
+
+  const body = document.getElementById('questionBody');
+  const errorMsg = document.getElementById('errorMsg');
+  const nextBtn = document.getElementById('nextBtn');
+  const backBtn = document.getElementById('backBtn');
+
+  renderQuestionInput(q, body);
+
+  nextBtn.addEventListener('click', () => {
+    if (q.required && !isAnswered(q)) {
+      errorMsg.textContent = 'A little more detail here will help us understand the brand.';
+      errorMsg.classList.add('visible'); sfx.error(); return;
+    }
+    if (q.custom && state.answers[q.id] === q.custom) {
+      const cv = state.answers[q.id + '_custom'];
+      if (q.required && (!cv || !cv.trim())) {
+        errorMsg.textContent = 'Please specify your answer for "' + q.custom + '".';
+        errorMsg.classList.add('visible'); sfx.error(); return;
+      }
+    }
+    if (q.followups) for (const f of q.followups) {
+      if (triggerMatches(f.triggerValue, state.answers[q.id]) && f.required) {
+        const fv = state.answers[q.id + '__' + f.id];
+        if (!fv || (Array.isArray(fv) ? fv.length === 0 : String(fv).trim() === '')) {
+          errorMsg.textContent = 'Please answer the follow-up question.';
+          errorMsg.classList.add('visible'); sfx.error(); return;
+        }
+      }
+    }
+    errorMsg.classList.remove('visible');
+    sfx.select(); bumpStreak();
+    onNext();
+  });
+  backBtn.addEventListener('click', () => { sfx.click(); onBack(); });
+}
+
+/* ============================================================
+   INPUT RENDERER
+   ============================================================ */
+function renderQuestionInput(q, parent, isFollowup, followupId) {
+  const answerKey = isFollowup ? (q.parentId + '__' + followupId) : q.id;
+  const saved = state.answers[answerKey];
+  const wrap = document.createElement('div');
+
+  if (q.type === 'text' || q.type === 'date') {
+    const input = document.createElement('input');
+    input.type = q.type === 'date' ? 'date' : 'text';
+    input.className = 'text-input';
+    input.placeholder = q.placeholder || '';
+    input.value = saved || '';
+    input.addEventListener('input', e => { state.answers[answerKey] = e.target.value; saveToLocal(); });
+    wrap.appendChild(input);
+  }
+  else if (q.type === 'textarea') {
+    const ta = document.createElement('textarea');
+    ta.className = 'text-area';
+    ta.placeholder = q.placeholder || '';
+    ta.value = saved || '';
+    ta.addEventListener('input', e => { state.answers[answerKey] = e.target.value; saveToLocal(); });
+    wrap.appendChild(ta);
+  }
+  else if (q.type === 'single') {
+    const grid = document.createElement('div');
+    grid.className = 'options-grid';
+    const mk = (label, isCustom) => {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'option-btn';
+      btn.textContent = label;
+      if (saved === label) btn.classList.add('selected');
+      btn.addEventListener('click', () => {
+        grid.querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected'));
+        btn.classList.add('selected');
+        state.answers[answerKey] = label;
+        const r = btn.getBoundingClientRect();
+        fireConfetti(r.left + r.width/2, r.top + r.height/2, 6);
+        sfx.select();
+        showCustomWrapper(answerKey, q, wrap, isCustom);
+        saveToLocal();
+      });
+      grid.appendChild(btn);
+    };
+    q.options.forEach(opt => mk(opt, false));
+    if (q.custom) mk(q.custom, true);
+    wrap.appendChild(grid);
+    if (q.custom && saved === q.custom) showCustomWrapper(answerKey, q, wrap, true);
+  }
+  else if (q.type === 'multiple') {
+    let selected = Array.isArray(saved) ? [...saved] : [];
+    const grid = document.createElement('div');
+    grid.className = 'options-grid';
+    const mk = (label, isCustom) => {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'option-btn';
+      btn.textContent = label;
+      if (selected.includes(label)) btn.classList.add('selected');
+      btn.addEventListener('click', () => {
+        if (selected.includes(label)) {
+          selected = selected.filter(o => o !== label);
+          btn.classList.remove('selected');
+        } else {
+          selected.push(label);
+          btn.classList.add('selected');
+          const r = btn.getBoundingClientRect();
+          fireConfetti(r.left + r.width/2, r.top + r.height/2, 5);
+          sfx.select();
+        }
+        state.answers[answerKey] = [...selected];
+        if (isCustom) showCustomWrapper(answerKey, q, wrap, selected.includes(label));
+        saveToLocal();
+        refreshFollowups(q, answerKey, wrap);
+      });
+      grid.appendChild(btn);
+    };
+    q.options.forEach(opt => mk(opt, false));
+    if (q.custom) mk(q.custom, true);
+    wrap.appendChild(grid);
+    if (q.custom && selected.includes(q.custom)) showCustomWrapper(answerKey, q, wrap, true);
+  }
+  else if (q.type === 'slider') {
+    const group = document.createElement('div');
+    group.className = 'slider-group';
+    q.sliders.forEach(sl => {
+      const item = document.createElement('div');
+      item.className = 'slider-item';
+      const val = state.sliderValues[sl.id] !== undefined ? state.sliderValues[sl.id] : 50;
+      item.innerHTML = `
+        <div class="slider-labels"><span>${sl.left}</span><span>${sl.right}</span></div>
+        <input type="range" class="slider-input" min="0" max="100" value="${val}" aria-label="${sl.left} to ${sl.right}">
+      `;
+      const inp = item.querySelector('input');
+      inp.addEventListener('input', e => {
+        state.sliderValues[sl.id] = parseInt(e.target.value, 10);
+        saveToLocal();
+      });
+      group.appendChild(item);
+    });
+    wrap.appendChild(group);
+  }
+  else if (q.type === 'tags') {
+    const tagContainer = document.createElement('div');
+    tagContainer.className = 'tags-container';
+    const input = document.createElement('input');
+    input.className = 'text-input';
+    input.placeholder = q.placeholder || 'Type and press Enter';
+    let tags = Array.isArray(saved) ? [...saved] : [];
+    const renderTags = () => {
+      tagContainer.innerHTML = '';
+      tags.forEach((t, i) => {
+        const span = document.createElement('span');
+        span.className = 'tag';
+        span.textContent = t;
+        const rm = document.createElement('button');
+        rm.type = 'button';
+        rm.textContent = '×';
+        rm.setAttribute('aria-label', 'Remove ' + t);
+        rm.addEventListener('click', () => {
+          tags.splice(i, 1);
+          state.answers[answerKey] = [...tags];
+          renderTags(); saveToLocal();
+        });
+        span.appendChild(rm);
+        tagContainer.appendChild(span);
+      });
+    };
+    input.addEventListener('keydown', e => {
+      if (e.key === 'Enter' && input.value.trim()) {
+        e.preventDefault();
+        tags.push(input.value.trim());
+        state.answers[answerKey] = [...tags];
+        input.value = '';
+        renderTags(); saveToLocal(); sfx.select();
+      }
+    });
+    renderTags();
+    wrap.appendChild(tagContainer);
+    wrap.appendChild(input);
+  }
+
+  parent.appendChild(wrap);
+
+  if (!isFollowup && q.followups && q.followups.length) {
+    const fc = document.createElement('div');
+    fc.id = 'followups_' + q.id;
+    wrap.appendChild(fc);
+    refreshFollowups(q, answerKey, wrap);
+  }
+}
+
+function showCustomWrapper(answerKey, q, wrap, show) {
+  const id = 'customWrap_' + answerKey;
+  let cw = document.getElementById(id);
+  if (show) {
+    if (!cw) {
+      cw = document.createElement('div');
+      cw.id = id;
+      cw.className = 'custom-input-wrapper';
+      cw.innerHTML = `<label>${esc(q.customPrompt || 'Tell us more')}</label><textarea class="text-area" placeholder="Your answer..."></textarea>`;
+      wrap.appendChild(cw);
+      const ta = cw.querySelector('textarea');
+      ta.value = state.answers[answerKey + '_custom'] || '';
+      ta.addEventListener('input', e => { state.answers[answerKey + '_custom'] = e.target.value; saveToLocal(); });
+    }
+    requestAnimationFrame(() => cw.classList.add('open'));
+  } else if (cw) cw.classList.remove('open');
+}
+
+function refreshFollowups(q, answerKey, wrap) {
+  const container = document.getElementById('followups_' + q.id);
+  if (!container) return;
+  container.innerHTML = '';
+  q.followups.forEach(f => {
+    if (triggerMatches(f.triggerValue, state.answers[q.id])) {
+      const block = document.createElement('div');
+      block.className = 'followup-block';
+      block.innerHTML = `<div class="question-text">${esc(f.text)}</div>`;
+      const fq = Object.assign({}, f, { parentId: q.id });
+      renderQuestionInput(fq, block, true, f.id);
+      container.appendChild(block);
+    }
+  });
+}
+
+/* ============================================================
+   DESIGNER NOTES (designer only)
+   ============================================================ */
+function renderDesignerNotesStep() {
+  clearMain();
+  const c = document.createElement('div');
+  c.className = 'questionnaire-container';
+  c.innerHTML = `
+    <div class="progress-area">
+      <div class="progress-meta"><span>DESIGNER NOTES</span><span class="pct">Private</span></div>
+      <div class="progress-bar-bg"><div class="progress-bar-fill" style="width:98%"></div></div>
+    </div>
+    <div class="question-card">
+      <div class="section-label">DESIGNER NOTES · NOT SHOWN TO CLIENT</div>
+      <div class="question-text">Observations, concerns, opportunities, follow-ups</div>
+      <div class="question-desc">These notes will appear only in your PDF export.</div>
+      <textarea class="text-area" id="designerNotesInput" placeholder="Initial observations, client concerns, design opportunities…" style="min-height:200px"></textarea>
+    </div>
+    <div class="nav-buttons">
+      <button class="btn btn-outline" id="backBtn">← Back</button>
+      <button class="btn btn-primary" id="nextBtn">Review Answers →</button>
+    </div>
+  `;
+  mainContent.appendChild(c);
+  const ta = document.getElementById('designerNotesInput');
+  ta.value = state.designerNotes || '';
+  ta.addEventListener('input', e => { state.designerNotes = e.target.value; saveToLocal(); });
+  document.getElementById('backBtn').addEventListener('click', () => {
+    sfx.click();
+    const active = getActiveSections('designer');
+    state.phase = 'sections';
+    state.currentSectionIndex = active.length - 1;
+    state.currentQuestionIndex = active[state.currentSectionIndex].questions.length - 1;
+    saveNow(); renderCurrentStep();
+  });
+  document.getElementById('nextBtn').addEventListener('click', () => {
+    sfx.select();
+    state.phase = 'review'; saveNow(); renderReviewStep();
+  });
+}
+
+/* ============================================================
+   REVIEW (mode-aware)
+   ============================================================ */
+function renderReviewStep() {
+  clearMain();
+  modeTaglineEl.textContent = (state.mode === 'designer' ? '🎨 Designer' : '💡 Client') + ' · Review';
+  state.phase = 'review'; saveNow();
+
+  const active = getActiveSections(state.mode);
+  const c = document.createElement('div');
+  c.className = 'questionnaire-container';
+  c.style.maxWidth = '900px';
+
+  let html = `<h2 style="font-size:2.2rem;margin-bottom:1.5rem;font-family:var(--serif);font-weight:400;">Review your answers</h2>`;
+  html += `<div class="review-section"><h3>Client Information</h3>`;
+  getClientInfoQuestions().forEach(q => {
+    let val = state.answers[q.id];
+    if (val === undefined || val === '' || (Array.isArray(val) && val.length === 0)) val = '—';
+    else if (Array.isArray(val)) val = val.join(', ');
+    if (state.answers[q.id + '_custom'] && state.answers[q.id + '_custom'].trim() && state.answers[q.id] === q.custom) {
+      val += ` (custom: ${state.answers[q.id + '_custom']})`;
+    }
+    html += `<div class="review-item"><div class="review-label">${esc(q.text)}</div><div class="review-value">${esc(String(val))}</div></div>`;
+  });
+  html += `</div>`;
+
+  active.forEach(sec => {
+    html += `<div class="review-section"><h3>${esc(sec.label)}</h3>`;
+    sec.questions.forEach(q => {
+      if (q.type === 'slider') {
+        (q.sliders || []).forEach(sl => {
+          const v = state.sliderValues[sl.id] !== undefined ? state.sliderValues[sl.id] : 50;
+          html += `<div class="review-item"><div class="review-label">${esc(sl.left)} ←→ ${esc(sl.right)}</div><div class="review-value">${v}/100</div></div>`;
+        });
+      } else {
+        let val = state.answers[q.id];
+        if (val === undefined || val === '' || (Array.isArray(val) && val.length === 0)) val = '—';
+        else if (Array.isArray(val)) val = val.join(', ');
+        if (state.answers[q.id + '_custom'] && state.answers[q.id + '_custom'].trim() && state.answers[q.id] === q.custom) {
+          val += ` (custom: ${state.answers[q.id + '_custom']})`;
+        }
+        html += `<div class="review-item"><div class="review-label">${esc(q.text)}</div><div class="review-value">${esc(String(val))}</div></div>`;
+        if (q.followups) q.followups.forEach(f => {
+          if (triggerMatches(f.triggerValue, state.answers[q.id])) {
+            const fv = state.answers[q.id + '__' + f.id];
+            let fvStr = '—';
+            if (fv !== undefined && fv !== null && !(Array.isArray(fv) && fv.length === 0)) {
+              fvStr = Array.isArray(fv) ? fv.join(', ') : String(fv);
+              if (state.answers[q.id + '__' + f.id + '_custom'] && state.answers[q.id + '__' + f.id + '_custom'].trim()) {
+                fvStr += ` (custom: ${state.answers[q.id + '__' + f.id + '_custom']})`;
+              }
+            }
+            html += `<div class="review-item" style="margin-left:1rem;padding-left:1rem;border-left:2px solid var(--accent-soft);"><div class="review-label">↳ ${esc(f.text)}</div><div class="review-value">${esc(fvStr)}</div></div>`;
+          }
+        });
+      }
+    });
+    html += `</div>`;
+  });
+
+  if (state.mode === 'designer' && state.designerNotes && state.designerNotes.trim()) {
+    html += `<div class="review-section"><h3>Designer Notes (private)</h3><div class="review-value">${esc(state.designerNotes)}</div></div>`;
+  }
+
+  html += `
+    <div class="nav-buttons" style="margin-top:2rem;">
+      <button class="btn btn-outline" id="editBtn">← Edit Answers</button>
+      <button class="btn btn-primary" id="completeBtn">Complete Questionnaire →</button>
+    </div>
+  `;
+  c.innerHTML = html;
+  mainContent.appendChild(c);
+
+  document.getElementById('editBtn').addEventListener('click', () => {
+    sfx.click();
+    state.phase = 'sections';
+    state.currentSectionIndex = active.length - 1;
+    state.currentQuestionIndex = active[state.currentSectionIndex].questions.length - 1;
+    saveNow(); renderCurrentStep();
+  });
+  document.getElementById('completeBtn').addEventListener('click', () => {
+    sfx.success();
+    state.phase = 'complete'; saveNow(); showCompletionScreen();
+  });
+}
+
+/* ============================================================
+   COMPLETION
+   ============================================================ */
+function showCompletionScreen() {
+  clearMain();
+  state.phase = 'complete'; saveNow();
+  const c = document.createElement('div');
+  c.className = 'completion-screen';
+  const emoji = state.mode === 'designer' ? '🎨' : '🎉';
+
+  if (state.mode === 'designer') {
+    c.innerHTML = `
+      <span class="completion-emoji">${emoji}</span>
+      <h1>Brand Discovery Complete.</h1>
+      <p class="sub">Your discovery session has been captured.</p>
+      <div class="completion-actions">
+        <button class="btn btn-primary" id="exportPdfBtn">Export as PDF</button>
+        <button class="btn btn-outline" id="reviewBtn">Review Answers</button>
+        <button class="btn btn-outline" id="resetBtn">Start New Project</button>
+      </div>
+    `;
+  } else {
+    c.innerHTML = `
+      <span class="completion-emoji">${emoji}</span>
+      <h1>You’re Done.</h1>
+      <p class="sub">Your answers have been captured and are ready to share with Shivam’s Lab.</p>
+      <div class="completion-actions">
+        <button class="btn btn-primary" id="generatePdfBtn">Generate PDF</button>
+        <button class="btn btn-accent" id="whatsappBtn">Send via WhatsApp</button>
+        <button class="btn btn-outline" id="reviewBtn">Review Answers</button>
+      </div>
+    `;
+  }
+  mainContent.appendChild(c);
+  fireFireworks();
+
+  const pdfBtn = document.getElementById('exportPdfBtn') || document.getElementById('generatePdfBtn');
+  if (pdfBtn) pdfBtn.addEventListener('click', () => { sfx.click(); generatePDF(); });
+  const waBtn = document.getElementById('whatsappBtn');
+  if (waBtn) waBtn.addEventListener('click', () => { sfx.click(); sendWhatsAppSummary(); });
+  document.getElementById('reviewBtn').addEventListener('click', () => { sfx.click(); renderReviewStep(); });
+  const resetBtn = document.getElementById('resetBtn');
+  if (resetBtn) resetBtn.addEventListener('click', () => {
+    sfx.click();
+    if (confirm('Clear all saved data and start over?')) {
+      localStorage.removeItem(STORAGE_KEY);
+      state = makeFreshState();
+      renderOpeningScreen();
+    }
+  });
+}
+
+/* ============================================================
+   PDF (mode-aware)
+   ============================================================ */
+function generatePDF() {
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF({ unit: 'mm', format: 'a4' });
+  const W = doc.internal.pageSize.getWidth();
+  const H = doc.internal.pageSize.getHeight();
+  const m = 18;
+  let y = 20;
+
+  doc.setFillColor(14, 14, 14);
+  doc.rect(0, 0, W, H, 'F');
+  doc.setTextColor(198, 161, 91);
+  doc.setFont('helvetica', 'bold'); doc.setFontSize(10);
+  doc.text('✦ BRAND DISCOVERY DOCUMENT', m, 40);
+  doc.setTextColor(255, 255, 255);
+  doc.setFontSize(32);
+  doc.text(BRAND_NAME, m, 80);
+  doc.setFont('helvetica', 'normal'); doc.setFontSize(16);
+  doc.text('Brand Discovery', m, 100);
+  doc.setFontSize(11); doc.setTextColor(198, 161, 91);
+  doc.text(TAGLINE, m, 112);
+  doc.setTextColor(255, 255, 255); doc.setFontSize(12);
+  doc.text(`Client/Brand: ${state.answers.clientBrandName || state.answers.brandName || '—'}`, m, 160);
+  doc.text(`Client name: ${state.answers.clientName || '—'}`, m, 172);
+  doc.text(`Date: ${state.answers.clientDate || new Date().toLocaleDateString()}`, m, 184);
+  doc.text(`Mode: ${state.mode === 'designer' ? 'Designer discovery' : 'Client submission'}`, m, 196);
+
+  doc.addPage(); y = m;
+  const ensure = (need) => { if (y + need > H - 20) { doc.addPage(); y = m; } };
+  const heading = (t) => { ensure(12); doc.setFont('helvetica', 'bold'); doc.setFontSize(14); doc.setTextColor(0,0,0); doc.text(t, m, y); y += 8; };
+  const kv = (label, value) => {
+    const v = (value === undefined || value === null || value === '') ? 'Not answered' : String(value);
+    const ll = doc.splitTextToSize(label + ':', W - m * 2);
+    const vl = doc.splitTextToSize(v, W - m * 2 - 4);
+    ensure(ll.length * 5 + vl.length * 5 + 4);
+    doc.setFont('helvetica', 'bold'); doc.setFontSize(10); doc.setTextColor(60,60,60);
+    doc.text(ll, m, y); y += ll.length * 5;
+    doc.setFont('helvetica', 'normal'); doc.setTextColor(20,20,20);
+    doc.text(vl, m + 2, y); y += vl.length * 5 + 3;
+  };
+
+  heading('Client Information');
+  getClientInfoQuestions().forEach(q => {
+    let val = state.answers[q.id];
+    if (Array.isArray(val)) val = val.join(', ');
+    if (state.answers[q.id + '_custom'] && state.answers[q.id + '_custom'].trim() && state.answers[q.id] === q.custom) {
+      val = (val || '') + ` (custom: ${state.answers[q.id + '_custom']})`;
+    }
+    kv(q.text, val);
+  });
+
+  const active = getActiveSections(state.mode);
+  active.forEach(sec => {
+    ensure(15);
+    doc.setDrawColor(220,220,220); doc.line(m, y, W - m, y); y += 4;
+    heading(sec.label);
+    sec.questions.forEach(q => {
+      if (q.type === 'slider') {
+        (q.sliders || []).forEach(sl => {
+          const v = state.sliderValues[sl.id] !== undefined ? state.sliderValues[sl.id] : 50;
+          kv(`${sl.left} ←→ ${sl.right}`, `${v}/100`);
+        });
+      } else {
+        let val = state.answers[q.id];
+        if (Array.isArray(val)) val = val.join(', ');
+        if (state.answers[q.id + '_custom'] && state.answers[q.id + '_custom'].trim() && state.answers[q.id] === q.custom) {
+          val = (val || '') + ` (custom: ${state.answers[q.id + '_custom']})`;
+        }
+        kv(q.text, val);
+        if (q.followups) q.followups.forEach(f => {
+          if (triggerMatches(f.triggerValue, state.answers[q.id])) {
+            let fv = state.answers[q.id + '__' + f.id];
+            if (Array.isArray(fv)) fv = fv.join(', ');
+            if (state.answers[q.id + '__' + f.id + '_custom'] && state.answers[q.id + '__' + f.id + '_custom'].trim()) {
+              fv = (fv || '') + ` (custom: ${state.answers[q.id + '__' + f.id + '_custom']})`;
+            }
+            kv('↳ ' + f.text, fv);
+          }
+        });
+      }
+    });
+  });
+
+  if (state.mode === 'designer' && state.designerNotes && state.designerNotes.trim()) {
+    ensure(15);
+    doc.setDrawColor(220,220,220); doc.line(m, y, W - m, y); y += 4;
+    heading('Designer Notes (private)');
+    doc.setFont('helvetica','normal'); doc.setFontSize(10);
+    const lines = doc.splitTextToSize(state.designerNotes, W - m * 2);
+    ensure(lines.length * 5);
+    doc.text(lines, m, y); y += lines.length * 5;
+  }
+
+  const total = doc.internal.getNumberOfPages();
+  for (let i = 1; i <= total; i++) {
+    doc.setPage(i);
+    doc.setFont('helvetica','normal'); doc.setFontSize(8); doc.setTextColor(150,150,150);
+    doc.text(`${BRAND_NAME} · ${TAGLINE}`, m, H - 8);
+    doc.text(`Page ${i} of ${total}`, W - m - 18, H - 8);
+  }
+
+  const brand = (state.answers.clientBrandName || state.answers.brandName || 'brand').replace(/[^a-z0-9]+/gi, '-');
+  doc.save(`ShivamLab-Discovery-${brand}.pdf`);
+}
+
+/* ============================================================
+   WHATSAPP
+   ============================================================ */
+function sendWhatsAppSummary() {
+  const brand = state.answers.clientBrandName || state.answers.brandName || 'my brand';
+  const clientName = state.answers.clientName || 'a client';
+  const audience = Array.isArray(state.answers.primaryAudience) ? state.answers.primaryAudience.join(', ') : (state.answers.primaryAudience || '—');
+  const style = Array.isArray(state.answers.visualStyle) ? state.answers.visualStyle.join(', ') : (state.answers.visualStyle || '—');
+  const values = Array.isArray(state.answers.values) ? state.answers.values.join(', ') : (state.answers.values || '—');
+  const message = `Hi Shivam, I’ve completed the Brand Discovery Questionnaire for *${brand}*.
+
+Client: ${clientName}
+Project type: ${state.answers.projectType || '—'}
+
+Quick summary:
+• Purpose: ${state.answers.brandWhy || '—'}
+• Audience: ${audience}
+• Values: ${values}
+• Visual direction: ${style}
+
+I’m attaching my completed questionnaire PDF. Thank you.`;
+  window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`, '_blank');
+}
+
+/* ============================================================
+   SOUND TOGGLE
+   ============================================================ */
+document.getElementById('soundToggle').addEventListener('click', (e) => {
+  soundEnabled = !soundEnabled;
+  e.currentTarget.textContent = soundEnabled ? '🔊' : '🔇';
+  e.currentTarget.classList.toggle('on', soundEnabled);
+  if (soundEnabled) sfx.select();
+});
+
+/* ============================================================
+   BOOT
+   ============================================================ */
+(function init() {
+  const restored = loadFromLocal();
+  if (restored && state.mode && state.phase !== 'opening') renderCurrentStep();
+  else renderOpeningScreen();
+})();
+</script>
+</body>
+</html>
