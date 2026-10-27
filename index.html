@@ -122,6 +122,20 @@
   .hud-item span { color: var(--brand-blue); font-weight: 700; font-size: 1.1rem; }
   .hud-divider { width: 1px; height: 20px; background: var(--border); }
 
+  /* TOAST NOTIFICATION */
+  .toast {
+    position: fixed; top: 50%; left: 50%;
+    transform: translate(-50%, -50%) scale(0.9);
+    background: var(--surface); border: 1px solid var(--brand-blue);
+    color: var(--brand-white); padding: 1.5rem 2.5rem;
+    border-radius: var(--r-card); box-shadow: var(--shadow-md);
+    font-weight: 600; font-size: 1.1rem; text-align: center;
+    z-index: 9999; opacity: 0; pointer-events: none;
+    transition: all 0.4s var(--spring); backdrop-filter: blur(20px);
+  }
+  .toast.show { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+  .toast-icon { font-size: 2.5rem; display: block; margin-bottom: 0.5rem; }
+
   /* OPENING SCREEN */
   .opening-screen{display:flex;flex-direction:column;align-items:center;text-align:center;padding:1rem 1rem 4rem;animation:fadeInUp .8s var(--spring) both}
   .eyebrow{display:inline-flex;align-items:center;gap:.5rem;background:var(--accent-soft);border:1px solid rgba(45,63,216,0.3);color:#8c9aff;font-weight:500;font-size:.85rem;padding:.5rem 1.2rem;border-radius:60px;margin-bottom:2rem}
@@ -270,6 +284,7 @@
 <div class="bg-overlay" aria-hidden="true"></div>
 
 <div class="streak" id="streak"><span>🔥</span> <span id="streakText">On a roll!</span></div>
+<div class="toast" id="levelToast"></div>
 
 <div id="app">
   <header class="brand-header">
@@ -348,6 +363,7 @@ const modeTaglineEl = document.getElementById('modeTagline');
 const streakEl = document.getElementById('streak');
 const streakTextEl = document.getElementById('streakText');
 const homeBtn = document.getElementById('homeBtn');
+const levelToast = document.getElementById('levelToast');
 
 function clearMain() { mainContent.innerHTML = ''; }
 function esc(s) { return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
@@ -401,6 +417,12 @@ function isAnswered(q) {
 /* ============================================================
    GAME MECHANICS (Designer Only)
    ============================================================ */
+function showToast(message, icon) {
+  levelToast.innerHTML = `<span class="toast-icon">${icon}</span>${message}`;
+  levelToast.classList.add('show');
+  setTimeout(() => levelToast.classList.remove('show'), 3000);
+}
+
 function awardXP(amount) {
   if (state.mode !== 'designer') return;
   const oldLevel = Math.floor(state.xp / 100) + 1;
@@ -410,7 +432,8 @@ function awardXP(amount) {
   if (newLevel > oldLevel) {
     sfx.levelUp();
     fireFireworks();
-    setTimeout(() => alert(`🌟 LEVEL UP! You reached Level ${newLevel}!\nYour discovery skills are getting sharper.`), 300);
+    // Replaced alert() with a smooth Toast notification
+    showToast(`LEVEL UP!<br>You reached Level ${newLevel}!`, '🌟');
   }
 }
 
