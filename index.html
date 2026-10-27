@@ -7,7 +7,6 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<!-- POPPINS FONT -->
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
   *{margin:0;padding:0;box-sizing:border-box}
@@ -19,8 +18,8 @@
     --brand-white:#F5F5F5;
 
     --bg:var(--brand-black);
-    --surface:rgba(255, 255, 255, 0.03); /* Glassmorphism base */
-    --surface-hover:rgba(255, 255, 255, 0.06);
+    --surface:rgba(255, 255, 255, 0.03);
+    --surface-hover:rgba(255, 255, 255, 0.08);
     --text:#F5F5F5;
     --text2:#A7A7A7;
     --muted:#7a7a7a;
@@ -36,9 +35,7 @@
     --r-btn:60px;
     --r-sm:12px;
     
-    /* POPPINS FONT */
     --font:'Poppins', -apple-system, BlinkMacSystemFont, sans-serif;
-    
     --t:.2s ease;
     --spring:cubic-bezier(.34,1.4,.64,1);
   }
@@ -56,44 +53,42 @@
     position:relative;
   }
 
-  /* ============================================================
-     BACKGROUND IMAGE & EFFECTS
-     ============================================================ */
+  /* BACKGROUND */
   .bg-image-layer {
-    position: fixed;
-    inset: 0;
-    z-index: -1;
-    /* REPLACE 'bg.jpg' WITH YOUR ACTUAL BACKGROUND IMAGE NAME */
+    position: fixed; inset: 0; z-index: -1;
     background-image: url('bg.jpg'); 
-    background-color: var(--brand-black); /* Fallback */
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
+    background-color: var(--brand-black);
+    background-size: cover; background-position: center;
     opacity: 0.8;
   }
   .bg-overlay {
-    position: fixed;
-    inset: 0;
-    z-index: -1;
+    position: fixed; inset: 0; z-index: -1;
     background: linear-gradient(to bottom, rgba(8,11,11,0.4), rgba(8,11,11,0.95));
   }
 
   #app{position:relative;z-index:2;flex:1;display:flex;flex-direction:column;max-width:1180px;margin:0 auto;padding:1.5rem 1.5rem 2rem;width:100%}
   
-  /* ============================================================
-     HEADER WITH LOGO
-     ============================================================ */
+  /* HEADER */
   .brand-header{display:flex;justify-content:space-between;align-items:center;padding:1rem 0 1.5rem;border-bottom:1px solid var(--border);margin-bottom:2.5rem;flex-wrap:wrap;gap:1rem}
   .brand-logo-container { display: flex; align-items: center; gap: 0.75rem; }
-  /* REPLACE 'logo.png' WITH YOUR ACTUAL LOGO IMAGE NAME */
-  .brand-logo-img { height: 90px; width: auto; object-fit: contain; }
+  .brand-logo-img { height: 100px; width: auto; object-fit: contain; }
   
   .header-right{display:flex;align-items:center;gap:1rem;flex-wrap:wrap}
   .tagline{font-size:.85rem;color:var(--text2);letter-spacing:.02em}
 
-  /* ============================================================
-     BUTTONS
-     ============================================================ */
+  /* HOME BUTTON */
+  .btn-home {
+    display: inline-flex; align-items: center; gap: 0.4rem;
+    background: transparent; border: 1px solid var(--border);
+    padding: 0.5rem 1rem; border-radius: var(--r-btn);
+    color: var(--text2); font-size: 0.85rem; cursor: pointer;
+    transition: all var(--t);
+  }
+  .btn-home:hover {
+    background: var(--surface-hover); color: var(--brand-white); border-color: var(--brand-white);
+  }
+
+  /* BUTTONS */
   .btn{
     display:inline-flex;align-items:center;justify-content:center;gap:.55rem;
     border:1px solid var(--border);background:var(--surface);color:var(--text);
@@ -105,23 +100,29 @@
   }
   .btn:hover{transform:translateY(-2px);box-shadow:var(--shadow-md);background:var(--surface-hover);border-color:var(--brand-blue)}
   .btn:active{transform:translateY(0) scale(.98)}
-  
   .btn-primary{background:var(--brand-blue);color:#fff;border-color:var(--brand-blue);box-shadow:var(--shadow-glow)}
   .btn-primary:hover{background:#2535c4;box-shadow:0 0 30px rgba(45,63,216,0.6)}
-  
   .btn-outline{background:transparent;border:1px solid var(--border);box-shadow:none}
   .btn-outline:hover{border-color:var(--text);background:var(--surface-hover)}
-  
   .btn-accent{background:var(--brand-white);border-color:var(--brand-white);color:var(--brand-black);font-weight:600}
   .btn-accent:hover{background:#fff;box-shadow:0 0 20px rgba(255,255,255,0.3)}
-  
   .btn:disabled{opacity:.4;pointer-events:none}
   .btn .ripple{position:absolute;border-radius:50%;background:rgba(255,255,255,.2);transform:scale(0);animation:ripple .5s linear;pointer-events:none;will-change:transform,opacity}
   @keyframes ripple{to{transform:scale(3);opacity:0}}
 
-  /* ============================================================
-     OPENING SCREEN
-     ============================================================ */
+  /* GAME HUD (DESIGNER ONLY) */
+  .game-hud {
+    display: flex; align-items: center; gap: 1.5rem;
+    background: rgba(45,63,216,0.1); border: 1px solid rgba(45,63,216,0.3);
+    padding: 0.75rem 1.5rem; border-radius: var(--r-btn);
+    margin-bottom: 1.5rem; backdrop-filter: blur(10px);
+    animation: fadeInUp .4s var(--spring);
+  }
+  .hud-item { display: flex; align-items: center; gap: 0.5rem; font-size: 0.9rem; font-weight: 500; }
+  .hud-item span { color: var(--brand-blue); font-weight: 700; font-size: 1.1rem; }
+  .hud-divider { width: 1px; height: 20px; background: var(--border); }
+
+  /* OPENING SCREEN */
   .opening-screen{display:flex;flex-direction:column;align-items:center;text-align:center;padding:1rem 1rem 4rem;animation:fadeInUp .8s var(--spring) both}
   .eyebrow{display:inline-flex;align-items:center;gap:.5rem;background:var(--accent-soft);border:1px solid rgba(45,63,216,0.3);color:#8c9aff;font-weight:500;font-size:.85rem;padding:.5rem 1.2rem;border-radius:60px;margin-bottom:2rem}
   .opening-headline{font-weight:700;font-size:clamp(2.8rem,8vw,5rem);letter-spacing:-.02em;line-height:1.1;max-width:900px;margin:0 0 1.5rem}
@@ -133,24 +134,17 @@
 
   .mode-cards{display:flex;gap:1.5rem;flex-wrap:wrap;justify-content:center;width:100%}
   .mode-card{
-    flex:1 1 280px;max-width:340px;
-    background:var(--surface);
-    backdrop-filter:blur(16px);
-    border:1px solid var(--border);
-    border-radius:var(--r-card);
-    padding:2.5rem 2rem;
-    cursor:pointer;text-align:left;
-    display:flex;flex-direction:column;gap:.75rem;
-    outline:none;transition:transform .3s var(--spring), box-shadow .3s, border-color .3s;
+    flex:1 1 280px;max-width:340px;background:var(--surface);backdrop-filter:blur(16px);
+    border:1px solid var(--border);border-radius:var(--r-card);padding:2.5rem 2rem;
+    cursor:pointer;text-align:left;display:flex;flex-direction:column;gap:.75rem;outline:none;
+    transition:transform .3s var(--spring), box-shadow .3s, border-color .3s;
     position:relative;overflow:hidden;
   }
   .mode-card::before{content:'';position:absolute;top:0;left:0;width:100%;height:100%;background:radial-gradient(circle at top right, rgba(45,63,216,0.15), transparent 60%);opacity:0;transition:opacity .3s}
   .mode-card:hover{transform:translateY(-8px);box-shadow:var(--shadow-md);border-color:rgba(45,63,216,0.5)}
   .mode-card:hover::before{opacity:1}
-  
   .mode-card .icon-badge{width:56px;height:56px;border-radius:16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);display:grid;place-items:center;font-size:1.6rem;margin-bottom:.75rem;transition:transform .3s var(--spring), background .3s}
   .mode-card:hover .icon-badge{transform:scale(1.1);background:var(--accent-soft);border-color:var(--brand-blue)}
-  
   .mode-card h2{font-size:1.6rem;font-weight:600;letter-spacing:-.01em}
   .mode-card p{color:var(--text2);font-weight:300;font-size:.95rem;flex:1}
   .mode-card .q-count{font-size:.75rem;color:#8c9aff;font-weight:500;margin-top:.5rem;letter-spacing:.03em;text-transform:uppercase}
@@ -163,9 +157,7 @@
   .resume-banner p{font-weight:500;font-size:1.05rem;display:flex;align-items:center;gap:.5rem;color:var(--brand-white)}
   .resume-banner .row{display:flex;gap:.75rem;flex-wrap:wrap}
 
-  /* ============================================================
-     QUESTIONNAIRE
-     ============================================================ */
+  /* QUESTIONNAIRE */
   .questionnaire-container{display:flex;flex-direction:column;flex:1;max-width:800px;margin:0 auto;width:100%;animation:slideIn .4s var(--spring) both}
   @keyframes slideIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
   @keyframes fadeInUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
@@ -177,10 +169,8 @@
   .progress-bar-fill{height:100%;width:0%;border-radius:20px;background:var(--brand-blue);box-shadow:0 0 15px rgba(45,63,216,0.8);transition:width .5s var(--spring);will-change:width}
 
   .question-card{
-    background:var(--surface);backdrop-filter:blur(16px);
-    border-radius:var(--r-card);padding:2.5rem;
-    border:1px solid var(--border);margin-bottom:1.5rem;
-    position:relative;box-shadow:var(--shadow-md);
+    background:var(--surface);backdrop-filter:blur(16px);border-radius:var(--r-card);padding:2.5rem;
+    border:1px solid var(--border);margin-bottom:1.5rem;position:relative;box-shadow:var(--shadow-md);
   }
   .section-label{font-size:.75rem;text-transform:uppercase;letter-spacing:.1em;color:var(--brand-blue);font-weight:600;margin-bottom:1rem;display:inline-flex;align-items:center;gap:.4rem}
   .section-label::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--brand-blue);box-shadow:0 0 8px var(--brand-blue)}
@@ -190,11 +180,9 @@
 
   .options-grid{display:flex;flex-wrap:wrap;gap:.75rem;margin:1.5rem 0 1rem}
   .option-btn{
-    background:rgba(255,255,255,0.03);border:1px solid var(--border);
-    border-radius:var(--r-btn);padding:.7rem 1.5rem;
-    font-family:var(--font);font-size:.95rem;font-weight:400;
-    color:var(--text);cursor:pointer;
-    transition:all .2s ease;
+    background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:var(--r-btn);
+    padding:.7rem 1.5rem;font-family:var(--font);font-size:.95rem;font-weight:400;
+    color:var(--text);cursor:pointer;transition:all .2s ease;
     display:inline-flex;align-items:center;gap:.4rem;text-align:left;
     position:relative;-webkit-tap-highlight-color:transparent;
   }
@@ -267,6 +255,8 @@
     .resume-banner{flex-direction:column;align-items:flex-start}
     .streak{top:auto;bottom:1.5rem;right:50%;transform:translate(50%,20px)}
     .streak.show{transform:translate(50%,0)}
+    .game-hud { flex-wrap: wrap; gap: 0.75rem; justify-content: center; }
+    .hud-divider { display: none; }
   }
   @media (prefers-reduced-motion:reduce){
     *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
@@ -276,7 +266,6 @@
 </head>
 <body>
 
-<!-- BACKGROUND IMAGE & OVERLAY -->
 <div class="bg-image-layer" aria-hidden="true"></div>
 <div class="bg-overlay" aria-hidden="true"></div>
 
@@ -285,10 +274,10 @@
 <div id="app">
   <header class="brand-header">
     <div class="brand-logo-container">
-      <!-- REPLACE logo.png WITH YOUR LOGO FILE -->
       <img src="logo.png" alt="Shivam's Lab" class="brand-logo-img" onerror="this.outerHTML='<div style=\'font-weight:600;font-size:1.4rem;color:var(--brand-white)\'>Shivam\'s Lab</div>'">
     </div>
     <div class="header-right">
+      <button class="btn-home hidden" id="homeBtn">← Return Home</button>
       <div class="tagline" id="modeTagline">Where Brands Take Shape.</div>
     </div>
   </header>
@@ -299,16 +288,27 @@
 /* ============================================================
    CONFIG
    ============================================================ */
-const WHATSAPP_NUMBER = '911234567890'; // replace with your real number
+const WHATSAPP_NUMBER = '911234567890'; 
 const BRAND_NAME = "Shivam's Lab";
 const TAGLINE = "Where Brands Take Shape.";
-const STORAGE_KEY = 'shivamLabDiscovery_v6';
+const STORAGE_KEY = 'shivamLabDiscovery_v7';
 
 /* ============================================================
    STATE
    ============================================================ */
 function makeFreshState() {
-  return { mode:null, phase:'opening', currentSectionIndex:0, currentQuestionIndex:0, answers:{}, sliderValues:{}, designerNotes:'', streak:0 };
+  return { 
+    mode:null, 
+    phase:'opening', 
+    currentSectionIndex:0, 
+    currentQuestionIndex:0, 
+    answers:{}, 
+    sliderValues:{}, 
+    designerNotes:'', 
+    streak: 0,
+    xp: 0,
+    focusScore: 100
+  };
 }
 let state = makeFreshState();
 
@@ -316,15 +316,9 @@ let state = makeFreshState();
    SOUND (Always On)
    ============================================================ */
 let audioCtx = null;
-
-// Unlock audio on first user interaction to bypass browser restrictions
 document.addEventListener('click', function unlockAudio() {
-  if (!audioCtx) { 
-    try { audioCtx = new (window.AudioContext || window.webkitAudioContext)(); } catch(e){} 
-  }
-  if (audioCtx && audioCtx.state === 'suspended') {
-    audioCtx.resume();
-  }
+  if (!audioCtx) { try { audioCtx = new (window.AudioContext || window.webkitAudioContext)(); } catch(e){} }
+  if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
   document.removeEventListener('click', unlockAudio);
 }, { once: true });
 
@@ -342,6 +336,7 @@ const sfx = {
   click: () => playTone(660, 0.06, 0.03),
   select: () => { playTone(880, 0.05, 0.04); setTimeout(()=>playTone(1180, 0.06, 0.03), 50); },
   success: () => { playTone(660, 0.06, 0.04); setTimeout(()=>playTone(880, 0.06, 0.04), 70); setTimeout(()=>playTone(1320, 0.1, 0.04), 140); },
+  levelUp: () => { playTone(523.25, 0.1, 0.05); setTimeout(()=>playTone(659.25, 0.1, 0.05), 100); setTimeout(()=>playTone(783.99, 0.1, 0.05), 200); setTimeout(()=>playTone(1046.50, 0.3, 0.05), 300); },
   error: () => playTone(220, 0.18, 0.05)
 };
 
@@ -352,8 +347,19 @@ const mainContent = document.getElementById('mainContent');
 const modeTaglineEl = document.getElementById('modeTagline');
 const streakEl = document.getElementById('streak');
 const streakTextEl = document.getElementById('streakText');
+const homeBtn = document.getElementById('homeBtn');
+
 function clearMain() { mainContent.innerHTML = ''; }
 function esc(s) { return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
+homeBtn.addEventListener('click', () => {
+  sfx.click();
+  if (confirm('Return to home screen? Your progress is saved.')) {
+    state.phase = 'opening';
+    saveNow();
+    renderOpeningScreen();
+  }
+});
 
 let saveTimer = null;
 function saveToLocal() {
@@ -393,11 +399,32 @@ function isAnswered(q) {
 }
 
 /* ============================================================
-   CONFETTI
+   GAME MECHANICS (Designer Only)
+   ============================================================ */
+function awardXP(amount) {
+  if (state.mode !== 'designer') return;
+  const oldLevel = Math.floor(state.xp / 100) + 1;
+  state.xp += amount;
+  const newLevel = Math.floor(state.xp / 100) + 1;
+  
+  if (newLevel > oldLevel) {
+    sfx.levelUp();
+    fireFireworks();
+    setTimeout(() => alert(`🌟 LEVEL UP! You reached Level ${newLevel}!\nYour discovery skills are getting sharper.`), 300);
+  }
+}
+
+function reduceFocus(amount) {
+  if (state.mode !== 'designer') return;
+  state.focusScore = Math.max(0, state.focusScore - amount);
+}
+
+/* ============================================================
+   CONFETTI & FIREWORKS
    ============================================================ */
 function fireConfetti(x, y, count) {
   if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-  const colors = ['#2D3FD8', '#A7A7A7', '#F5F5F5', '#4a5cf0'];
+  const colors = ['#2D3FD8', '#A7A7A7', '#F5F5F5', '#4a5cf0', '#FFD700'];
   const n = Math.min(count || 8, 8);
   const frag = document.createDocumentFragment();
   for (let i = 0; i < n; i++) {
@@ -422,7 +449,7 @@ function fireConfetti(x, y, count) {
 function fireFireworks() {
   if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
   const cx = window.innerWidth / 2, cy = window.innerHeight / 2;
-  [0, 200, 450].forEach(d => setTimeout(() => fireConfetti(cx + (Math.random()-0.5)*200, cy + (Math.random()-0.5)*150, 8), d));
+  [0, 200, 450, 700].forEach(d => setTimeout(() => fireConfetti(cx + (Math.random()-0.5)*300, cy + (Math.random()-0.5)*200, 12), d));
 }
 
 /* ============================================================
@@ -433,11 +460,15 @@ function bumpStreak() {
   const now = Date.now();
   state.streak = (now - lastAnswerTime < 12000) ? (state.streak || 0) + 1 : 1;
   lastAnswerTime = now;
-  if (state.streak >= 3) {
-    streakEl.classList.add('show');
-    streakTextEl.textContent = state.streak >= 8 ? 'Legendary! 🔥' : state.streak >= 5 ? "You're on fire! 🔥" : "Nice streak! 🔥";
-    if (streakTimer) clearTimeout(streakTimer);
-    streakTimer = setTimeout(() => streakEl.classList.remove('show'), 3000);
+  
+  if (state.mode === 'designer') {
+    awardXP(state.streak > 1 ? 20 * state.streak : 10);
+    if (state.streak >= 3) {
+      streakEl.classList.add('show');
+      streakTextEl.textContent = state.streak >= 8 ? 'Legendary Streak! 🔥🔥' : state.streak >= 5 ? "You're on fire! 🔥" : "Fast answers! 🔥";
+      if (streakTimer) clearTimeout(streakTimer);
+      streakTimer = setTimeout(() => streakEl.classList.remove('show'), 3000);
+    }
   }
 }
 
@@ -644,6 +675,7 @@ function computeOverallProgress() {
    ============================================================ */
 function renderOpeningScreen() {
   modeTaglineEl.textContent = TAGLINE;
+  homeBtn.classList.add('hidden');
   clearMain();
   const wrap = document.createElement('div');
   wrap.className = 'opening-screen';
@@ -670,7 +702,7 @@ function renderOpeningScreen() {
         <h2>I’m the Designer</h2>
         <p>Conducting a full brand discovery session with my client.</p>
         <div class="q-count">${designerCount} questions · full discovery</div>
-        <div class="badge">Continue as designer <span class="arrow">→</span></div>
+        <div class="badge">Start Discovery Game <span class="arrow">→</span></div>
       </div>
       <div class="mode-card" tabindex="0" role="button" data-mode="client">
         <div class="icon-badge">💡</div>
@@ -722,6 +754,7 @@ function startMode(mode) {
    ============================================================ */
 function renderCurrentStep() {
   clearMain();
+  homeBtn.classList.remove('hidden');
   modeTaglineEl.textContent = state.mode === 'designer' ? '🎨 Designer Mode' : (state.mode === 'client' ? '💡 Client Mode' : TAGLINE);
   if (state.phase === 'opening' || !state.mode) { renderOpeningScreen(); return; }
 
@@ -794,7 +827,23 @@ function renderQuestionCard({ q, sectionLabel, idx, total, onNext, onBack }) {
   const prog = computeOverallProgress();
   const percent = Math.min(100, Math.round((prog.done / Math.max(prog.total, 1)) * 100));
 
+  // Designer HUD
+  let gameHudHTML = '';
+  if (state.mode === 'designer') {
+    const level = Math.floor(state.xp / 100) + 1;
+    gameHudHTML = `
+      <div class="game-hud">
+        <div class="hud-item">🏆 Level <span>${level}</span></div>
+        <div class="hud-divider"></div>
+        <div class="hud-item">⚡ XP <span>${state.xp}</span></div>
+        <div class="hud-divider"></div>
+        <div class="hud-item">🎯 Focus <span>${state.focusScore}%</span></div>
+      </div>
+    `;
+  }
+
   container.innerHTML = `
+    ${gameHudHTML}
     <div class="progress-area">
       <div class="progress-meta"><span>${esc(sectionLabel)} · Q${idx + 1}/${total}</span><span class="pct">${percent}%</span></div>
       <div class="progress-bar-bg"><div class="progress-bar-fill" style="width:${percent}%"></div></div>
@@ -823,13 +872,13 @@ function renderQuestionCard({ q, sectionLabel, idx, total, onNext, onBack }) {
   nextBtn.addEventListener('click', () => {
     if (q.required && !isAnswered(q)) {
       errorMsg.textContent = 'A little more detail here will help us understand the brand.';
-      errorMsg.classList.add('visible'); sfx.error(); return;
+      errorMsg.classList.add('visible'); sfx.error(); reduceFocus(5); return;
     }
     if (q.custom && state.answers[q.id] === q.custom) {
       const cv = state.answers[q.id + '_custom'];
       if (q.required && (!cv || !cv.trim())) {
         errorMsg.textContent = 'Please specify your answer for "' + q.custom + '".';
-        errorMsg.classList.add('visible'); sfx.error(); return;
+        errorMsg.classList.add('visible'); sfx.error(); reduceFocus(5); return;
       }
     }
     if (q.followups) for (const f of q.followups) {
@@ -837,7 +886,7 @@ function renderQuestionCard({ q, sectionLabel, idx, total, onNext, onBack }) {
         const fv = state.answers[q.id + '__' + f.id];
         if (!fv || (Array.isArray(fv) ? fv.length === 0 : String(fv).trim() === '')) {
           errorMsg.textContent = 'Please answer the follow-up question.';
-          errorMsg.classList.add('visible'); sfx.error(); return;
+          errorMsg.classList.add('visible'); sfx.error(); reduceFocus(5); return;
         }
       }
     }
@@ -1044,6 +1093,11 @@ function renderDesignerNotesStep() {
   const c = document.createElement('div');
   c.className = 'questionnaire-container';
   c.innerHTML = `
+    <div class="game-hud">
+      <div class="hud-item">🏆 Level <span>${Math.floor(state.xp / 100) + 1}</span></div>
+      <div class="hud-divider"></div>
+      <div class="hud-item">⚡ XP <span>${state.xp}</span></div>
+    </div>
     <div class="progress-area">
       <div class="progress-meta"><span>DESIGNER NOTES</span><span class="pct">Private</span></div>
       <div class="progress-bar-bg"><div class="progress-bar-fill" style="width:98%"></div></div>
@@ -1082,6 +1136,7 @@ function renderDesignerNotesStep() {
    ============================================================ */
 function renderReviewStep() {
   clearMain();
+  homeBtn.classList.remove('hidden');
   modeTaglineEl.textContent = (state.mode === 'designer' ? '🎨 Designer' : '💡 Client') + ' · Review';
   state.phase = 'review'; saveNow();
 
@@ -1168,6 +1223,7 @@ function renderReviewStep() {
    ============================================================ */
 function showCompletionScreen() {
   clearMain();
+  homeBtn.classList.remove('hidden');
   state.phase = 'complete'; saveNow();
   const c = document.createElement('div');
   c.className = 'completion-screen';
@@ -1227,22 +1283,22 @@ function generatePDF() {
   let y = 20;
 
   // Dark Brand Cover Page
-  doc.setFillColor(8, 11, 11); // #080B0B
+  doc.setFillColor(8, 11, 11); 
   doc.rect(0, 0, W, H, 'F');
   
   // Brand Blue Accent
-  doc.setFillColor(45, 63, 216); // #2D3FD8
-  doc.rect(0, 0, 8, H, 'F'); // Left blue bar
+  doc.setFillColor(45, 63, 216);
+  doc.rect(0, 0, 8, H, 'F');
   
-  doc.setTextColor(245, 245, 245); // White
+  doc.setTextColor(245, 245, 245);
   doc.setFont('helvetica', 'bold'); doc.setFontSize(28);
   doc.text(BRAND_NAME, m + 4, 70);
   
-  doc.setTextColor(167, 167, 167); // Gray
+  doc.setTextColor(167, 167, 167);
   doc.setFont('helvetica', 'normal'); doc.setFontSize(14);
   doc.text('Brand Discovery Document', m + 4, 85);
   
-  doc.setTextColor(45, 63, 216); // Blue
+  doc.setTextColor(45, 63, 216);
   doc.setFontSize(11);
   doc.text(TAGLINE, m + 4, 95);
   
@@ -1254,7 +1310,7 @@ function generatePDF() {
 
   // Content Pages
   doc.addPage(); y = m;
-  doc.setTextColor(0,0,0); // Back to black text for content
+  doc.setTextColor(0,0,0);
   
   const ensure = (need) => { if (y + need > H - 20) { doc.addPage(); y = m; } };
   const heading = (t) => { ensure(12); doc.setFont('helvetica', 'bold'); doc.setFontSize(14); doc.setTextColor(45, 63, 216); doc.text(t, m, y); y += 8; };
